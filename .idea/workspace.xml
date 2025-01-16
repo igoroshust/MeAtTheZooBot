@@ -4,7 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c8a0b0b8-d9ba-4c90-9761-bbf8d06978bd" name="Changes" comment="" />
+    <list default="true" id="c8a0b0b8-d9ba-4c90-9761-bbf8d06978bd" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MeAtTheZooBot.py" beforeDir="false" afterPath="$PROJECT_DIR$/MeAtTheZooBot.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/7adfa73d-6cbe-4d1d-855f-b53af96adcb7.jpeg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/bear.jpeg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/bushdog.jpeg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/caiman.jpeg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/puma.jpeg" beforeDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />

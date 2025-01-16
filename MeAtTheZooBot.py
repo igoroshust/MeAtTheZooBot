@@ -1,5 +1,6 @@
 import logging
 import time
+import os
 
 import telebot
 from telebot import types
@@ -12,6 +13,9 @@ logging.basicConfig(
 
 TOKEN = "7583232505:AAF-jNPRMssXuAS5JwDDjauH1KeLYOhjRFw"
 bot = telebot.TeleBot(TOKEN)
+
+# Абсолютный путь к папке images
+images_folder = os.path.join(os.path.dirname(__file__), 'images')
 
 
 # @bot.message_handler(commands=['start'])
@@ -115,7 +119,7 @@ def fine_key(z, key, val):
     print(key, val, z)
     time.sleep(2)
     bot.send_message(chat_id=z, text=f"Ваше тотемное животное в Московском зоопарке – {val}")
-    bot.send_photo(chat_id=z, photo=open(f'images/{key}.JPG', 'rb'))
+    bot.send_photo(chat_id=z, photo=open(os.path.join(images_folder, f'{key}.JPG'), 'rb'))
 
 def inline_key(num):
     """Функция для вывода кнопок"""
@@ -137,53 +141,66 @@ def inline_key(num):
 
 
 @bot.message_handler(commands=["start"])
-# главное меню
 def start(m):
     chat_id = m.chat.id
-    text = '\tМосковский зоопарк предлагает - \n\
-взять под опеку можно разных обитателей зоопарка, например:'
-    bot.send_message(m.chat.id, text)
-    time.sleep(3)
+    text = '\tПриветствуем Вас в Московском зоопарке! \n\
+Давайте определим Ваше тотемное животное?'
+
+    # Открываем и отправляем изображение
+    with open(os.path.join(images_folder, 'MZoo-logo.JPG'), 'rb') as logo:
+        bot.send_photo(chat_id, logo)
+
+    # Создаём клавиатуру с кнопкой "Подобрать"
+    key = types.InlineKeyboardMarkup()
+    key.add(types.InlineKeyboardButton(text='Подобрать', callback_data='pick_animal'))
+
+    # Отправляем текстовое сообщение
+    bot.send_message(chat_id, text, reply_markup=key)
+
+
+@bot.callback_query_handler(func=lambda call: call.data == 'pick_animal')
+def handle_pick_animal(call):
+    chat_id = call.message.chat.id
+
     for dic in animals:  # выводит список словарей
         for key, val in dic.items():
-            # print(f'{key} is {val}')
-            bot.send_message(m.chat.id, f'\n {val}')
-            img = open(f'{key}.JPG', 'rb')
-            bot.send_photo(m.chat.id, img)
-            # bot.send_photo(m.chat_id, photo=open(f'{key}.JPG', 'rb'))
+            bot.send_message(chat_id, f'\n {val}')
+            with open(os.path.join(images_folder, f'{key}.JPG'), 'rb') as img:
+                bot.send_photo(chat_id, img)
             time.sleep(1)
 
-    img = open(f'MZoo-logo-сircle-preview.JPG', 'rb')
-    bot.send_photo(m.chat.id, img)
+    # Создаём клавиатуру с кнопкой выбора категории животного
     key = types.InlineKeyboardMarkup()
-    key.add(types.InlineKeyboardButton(text='Мне нравятся млекопитающие животные', callback_data="butt1"))
-    key.add(types.InlineKeyboardButton(text='Мне больше нравятся птицы', callback_data="butt2"))
-    key.add(types.InlineKeyboardButton(text='Мне больше нравятся рептилий', callback_data="butt3"))
-    msg = bot.send_message(m.chat.id, 'Какие животные Вам больше нравятся?', reply_markup=key)
-    logging.info(m.chat.id)
+    key.add(types.InlineKeyboardButton(text='Млекопитающие', callback_data="mammals"))
+    key.add(types.InlineKeyboardButton(text='Птицы', callback_data="birds"))
+    key.add(types.InlineKeyboardButton(text='Рептилии', callback_data="reptiles"))
+
+    # Отправляем финальное сообщение
+    bot.send_message(chat_id, 'Какие животные Вам больше нравятся?', reply_markup=key)
+    logging.info(chat_id)
 
 
 @bot.callback_query_handler(func=lambda call: True)
 def inline(c):
-    if c.data == 'butt1':
+    if c.data == 'mammals':
         bot.edit_message_text(
             chat_id=c.message.chat.id,
             message_id=c.message.message_id,
-            text="выбор - *млекопитающие*",
+            text="Категория: Млекопитающие",
             parse_mode="markdown",
             reply_markup=inline_key(1))
-    elif c.data == 'butt2':
+    elif c.data == 'birds':
         bot.edit_message_text(
             chat_id=c.message.chat.id,
             message_id=c.message.message_id,
-            text="выбор - *птицы*",
+            text="Категория: Птицы",
             parse_mode="markdown",
             reply_markup=inline_key(2))
-    elif c.data == 'butt3':
+    elif c.data == 'reptiles':
         bot.edit_message_text(
             chat_id=c.message.chat.id,
             message_id=c.message.message_id,
-            text="выбор - *рептилии*",
+            text="Категория: Рептилии",
             parse_mode="markdown",
             reply_markup=inline_key(3))
         print(c.data)
@@ -198,9 +215,9 @@ def inline(c):
                     bot.edit_message_text(
                         chat_id=c.message.chat.id,
                         message_id=c.message.message_id,
-                        text=f'Поздравляем!!!\
-                         \nВаш подопечный - {val}! \nЕсть сомнения? \nПройдите тест ещё раз - /start\
-                        \nКонтакт - igorchan@mail.ru\nОбратная связь - /Feedback',
+                        text=f'Поздравляем!\
+                         \nВаше животное - {val}! \nНе устраивает результат? \nПройдите тест ещё раз - /start\
+                        \nКонтакт - igoroshust@yandex.ru\nОбратная связь - /Feedback',
                         parse_mode="markdown",
                         reply_markup=fine_key(c.message.chat.id, key, val))
         time.sleep(2)
