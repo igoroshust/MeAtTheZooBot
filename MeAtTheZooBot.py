@@ -78,7 +78,7 @@ def save_username(message):
     chat_id = message.chat.id
     name = message.text
     users[chat_id]['name'] = name
-    bot.send_message(chat_id, f'Отлично, {name}. Ваше сообщение: ')
+    bot.send_message(chat_id, f'Хорошо, {name}. Ваше сообщение: ')
     bot.register_next_step_handler(message, save_surname)
 
 def save_surname(message):
@@ -118,8 +118,15 @@ def save_btn(call):
 def fine_key(z, key, val):
     print(key, val, z)
     time.sleep(2)
-    bot.send_message(chat_id=z, text=f"Ваше тотемное животное в Московском зоопарке – {val}")
+    bot.send_message(chat_id=z, text=f"Поздравляем!\n\n Ваше тотемное животное – {val}!")
     bot.send_photo(chat_id=z, photo=open(os.path.join(images_folder, f'{key}.JPG'), 'rb'))
+    time.sleep(2)
+    keyboard = types.InlineKeyboardMarkup()
+    url_button = types.InlineKeyboardButton(text="Московский зоопарк", url="https://moscowzoo.ru/animals/")
+    keyboard.add(url_button)
+    bot.send_message(z,
+                     "Взять животное под опеку, а также найти информацию о нём, можно найти на сайте:",
+                     reply_markup=keyboard)
 
 def inline_key(num):
     """Функция для вывода кнопок"""
@@ -186,26 +193,25 @@ def inline(c):
         bot.edit_message_text(
             chat_id=c.message.chat.id,
             message_id=c.message.message_id,
-            text="Категория: Млекопитающие",
+            text="Какое млекопитающее Вам понравилось больше?",
             parse_mode="markdown",
             reply_markup=inline_key(1))
     elif c.data == 'birds':
         bot.edit_message_text(
             chat_id=c.message.chat.id,
             message_id=c.message.message_id,
-            text="Категория: Птицы",
+            text="Какая птица Вам понравилась больше?",
             parse_mode="markdown",
             reply_markup=inline_key(2))
     elif c.data == 'reptiles':
         bot.edit_message_text(
             chat_id=c.message.chat.id,
             message_id=c.message.message_id,
-            text="Категория: Рептилии",
+            text="Какая рептилия Вам больше понравилась?",
             parse_mode="markdown",
             reply_markup=inline_key(3))
         print(c.data)
-    elif c.data == 'bear' or 'puma' or 'bushdog' or 'penguin' or 'parrot' or \
-            'gadwall' or 'caiman' or 'iguana' or 'boiga':
+    elif c.data in ['bear', 'puma', 'bushdog', 'penguin', 'parrot', 'gadwall', 'caiman', 'iguana', 'boiga']:
         for dic in animals:  # выводит список словарей
             for key, val in dic.items():
                 # print(f'{key} is {val}')
@@ -215,16 +221,12 @@ def inline(c):
                     bot.edit_message_text(
                         chat_id=c.message.chat.id,
                         message_id=c.message.message_id,
-                        text=f'Поздравляем!\
-                         \nВаше животное - {val}! \nНе устраивает результат? \nПройдите тест ещё раз - /start\
-                        \nКонтакт - igoroshust@yandex.ru\nОбратная связь - /Feedback',
+                        text=f"123",
                         parse_mode="markdown",
                         reply_markup=fine_key(c.message.chat.id, key, val))
         time.sleep(2)
-        keyboard = types.InlineKeyboardMarkup()
-        url_button = types.InlineKeyboardButton(text="Московский зоопарк", url="https://moscowzoo.ru/animals/")
-        keyboard.add(url_button)
-        bot.send_message(TELEGRAM_CHAT_ID, "Информацию о животных можно найти на сайте:", reply_markup=keyboard)
+        bot.send_message(c.message.chat.id, text=f"\nНе устраивает результат? \nПройдите тест ещё раз - /start\
+                            \nКонтакт - igoroshust@yandex.ru\nОбратная связь - /Feedback")
 
 
 # Обрабатывается все документы и аудиозаписи
